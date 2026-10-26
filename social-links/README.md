@@ -15,6 +15,10 @@ Facebook 與 Threads 商標路徑取自 [Simple Icons](https://simpleicons.org/)
 
 在 Notion 輸入 `/embed`，貼上 `https://lupinart.github.io/notion-widgets/social-links/` 並調整區塊高度即可。
 
+頁面宣告支援深／淺色，處理嵌入時色彩模式不一致可能產生的白色畫布；`html/body` 持續透明，按鈕維持白底。實際透明效果仍需在 Notion 驗證，外層 iframe 若由 Notion 指定背景，小工具無法直接修改。
+
+小工具內容高 40px、寬 184px，沒有內距或外距。Notion 的嵌入區塊高度由 Notion 控制，需手動拖曳底緣縮小；網頁無法直接改動外層區塊尺寸。
+
 ## 本機驗證
 
 依工作區規則，網站測試只在 `/private/tmp/codex-builds/` 的暫存副本執行。
