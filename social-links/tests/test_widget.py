@@ -117,13 +117,15 @@ class WidgetContractTests(unittest.TestCase):
         self.assertEqual("nowrap", list_style.get("flex-wrap"))
         self.assertLessEqual(required_width, 220)
 
-    def test_embed_canvas_is_transparent_without_full_height_stretching(self):
+    def test_embed_canvas_is_transparent_and_centers_content_in_both_directions(self):
         styles = parse_styles()
 
         self.assertEqual("transparent", styles["html"].get("background"))
         self.assertEqual("transparent", styles["body"].get("background"))
-        self.assertNotIn("min-height", styles["html"])
-        self.assertNotIn("min-height", styles["body"])
+        self.assertEqual("100%", styles["html"].get("height"))
+        self.assertEqual("100%", styles["body"].get("min-height"))
+        self.assertEqual("center", styles["body"].get("justify-content"))
+        self.assertEqual("center", styles["body"].get("align-items"))
 
     def test_icons_and_buttons_use_the_compact_size(self):
         styles = parse_styles()

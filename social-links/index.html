@@ -24,11 +24,16 @@
         background: transparent;
       }
 
+      html {
+        height: 100%;
+      }
+
       body {
         display: flex;
         justify-content: center;
-        align-items: flex-start;
-        padding: 0;
+        align-items: center;
+        min-height: 100%;
+        padding: 8px;
         background: transparent;
         overflow: hidden;
       }
@@ -45,11 +50,11 @@
 
       .social-link {
         display: grid;
-        width: 40px;
-        height: 40px;
+        width: 32px;
+        height: 32px;
         place-items: center;
         color: var(--blue);
-        background: var(--white);
+        background: rgb(255 255 255 / 75%);
         border: 0;
         border-radius: 50%;
         cursor: pointer;
