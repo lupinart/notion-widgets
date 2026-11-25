@@ -5,28 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <title>鹿苹視覺｜社群連結</title>
+  <script>
+    const requestedTheme = new URLSearchParams(location.search).get('theme');
+    if (requestedTheme === 'light' || requestedTheme === 'dark') {
+      document.documentElement.dataset.theme = requestedTheme;
+    }
+  </script>
   <style>
     :root {
       color-scheme: light dark;
-      --ink: #214465;
-      --front: #e6eff7;
-      --border: #afc3d6;
-      --reverse: #205481;
-      --reverse-ink: #f5f9fc;
-      --focus: #397ab8;
+      --ink: light-dark(#2c2c2a, #f0efec);
+      --front: light-dark(#f7f6f5, #373735);
+      --border: light-dark(#e3e1de, #4c4c49);
+      --accent: light-dark(#286897, #8dbde6);
+      --reverse: light-dark(#244e74, #88b5da);
+      --reverse-ink: light-dark(#f5f9fc, #182d3f);
       --motion: 280ms cubic-bezier(.22, 1, .36, 1);
     }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --ink: #e3effb;
-        --front: #253a50;
-        --border: #466786;
-        --reverse: #a9cdee;
-        --reverse-ink: #18354e;
-        --focus: #a9cdee;
-      }
-    }
+    :root[data-theme="light"] { color-scheme: only light; }
+    :root[data-theme="dark"] { color-scheme: only dark; }
 
     *, *::before, *::after { box-sizing: border-box; }
 
@@ -57,7 +55,7 @@
     }
 
     .social-link:focus-visible {
-      outline: 2px solid var(--focus);
+      outline: 2px solid var(--accent);
       outline-offset: 2px;
     }
 
@@ -91,6 +89,7 @@
       flex: 0 0 16px;
       width: 16px;
       height: 16px;
+      color: var(--accent);
     }
 
     .back {
