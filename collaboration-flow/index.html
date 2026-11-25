@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>鹿苹視覺｜合作流程</title>
+  <script>
+    const requestedTheme = new URLSearchParams(location.search).get('theme');
+    if (requestedTheme === 'light' || requestedTheme === 'dark') {
+      document.documentElement.dataset.theme = requestedTheme;
+    }
+  </script>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --gray-paper: light-dark(#f7f6f5, #373735);
+      --gray-ink: light-dark(#2c2c2a, #f0efec);
+      --blue-ink: light-dark(#286897, #8dbde6);
+      --blue-paper: light-dark(#e6eff7, #253a50);
+      --blue-line: light-dark(#9dbad2, #4b728f);
+      --surface: var(--gray-paper);
+      --text: var(--gray-ink);
+      --accent: var(--blue-ink);
+      --highlight: var(--blue-paper);
+      --highlight-rule: var(--blue-line);
+      --active-bg: var(--highlight);
+      --detail-bg: var(--surface);
+      --selected-ink: light-dark(#fff, #18354e);
+      --ease-out: cubic-bezier(.22, 1, .36, 1);
+      --radius: 8px;
+      --gap: 8px;
+      --node-size: 46px;
+      --font-heading: -apple-system, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      --font-body: var(--font-heading);
+      --font-data: "IBM Plex Mono", ui-monospace, monospace;
+    }
+    :root[data-theme="light"] { color-scheme: only light; }
+    :root[data-theme="dark"] { color-scheme: only dark; }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; background: transparent; color: var(--text); }
+    body { padding: 5px; font: 14px/1.65 var(--font-body); }
+    .workflow {
+      --rail-position: 0;
+      max-width: 960px;
+      margin-inline: auto;
+    }
+    h1 { margin: 0 0 12px; font: 700 17px/1.35 var(--font-heading); }
+    .timeline { position: relative; }
+    .timeline-rail {
+      position: absolute;
+      inset-inline-start: calc((100% - 3 * var(--gap)) / 8);
+      inset-block-start: 0;
+      width: calc(75% + .75 * var(--gap));
+      height: var(--node-size);
+      overflow: visible;
+      pointer-events: none;
+    }
+    .rail-path {
+      fill: none;
+      stroke-width: 2px;
+      stroke-linecap: round;
+      vector-effect: non-scaling-stroke;
+    }
+    .rail-base { stroke: var(--highlight-rule); stroke-dasharray: 4px 5px; }
+    .rail-progress {
+      stroke: var(--accent);
+      stroke-dasharray: 1;
+      stroke-dashoffset: calc(1 - var(--rail-position));
+      transition: stroke-dashoffset 260ms var(--ease-out);
+    }
+    .steps {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--gap);
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+    .step {
+      display: grid;
+      justify-items: center;
+      gap: 6px;
+      width: 100%;
+      padding: 0 3px 5px;
+      border: 0;
+      border-radius: var(--radius);
+      background: transparent;
+      color: var(--text);
+      font: 650 14px/1.3 var(--font-heading);
+      text-align: left;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .step:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .step-number {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: var(--node-size);
+      height: var(--node-size);
+      border: 1px solid var(--highlight-rule);
+      border-radius: 50%;
+      background: var(--active-bg);
+      color: var(--accent);
+      font: 650 15px/1 var(--font-data);
+      transition: transform 240ms var(--ease-out), background-color 160ms ease-out, color 160ms ease-out;
+    }
+    .step-cue {
+      position: absolute;
+      inset-inline-end: -3px;
+      inset-block-end: -2px;
+      width: 14px;
+      height: 14px;
+      border: 1px solid var(--highlight-rule);
+      border-radius: 50%;
+      background:
+        linear-gradient(var(--accent), var(--accent)) center / 6px 1px no-repeat,
+        linear-gradient(var(--accent), var(--accent)) center / 1px 6px no-repeat,
+        var(--detail-bg);
+    }
+    .step[data-active] .step-cue { visibility: hidden; }
+    .step[data-active] .step-number {
+      transform: translateY(-2px) scale(1.1);
+      background: var(--accent);
+      color: var(--selected-ink);
+    }
+    .step-title { white-space: nowrap; }
+    .step[data-active] .step-title { color: var(--accent); }
+    .details {
+      display: grid;
+      margin-block-start: 10px;
+      background: var(--detail-bg);
+      border: 1px solid var(--highlight-rule);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .detail {
+      grid-area: 1 / 1;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 12px;
+      margin: 0;
+      padding: 12px 14px;
+    }
+    .detail-number {
+      padding-inline-end: 11px;
+      border-inline-end: 1px solid var(--highlight-rule);
+      color: var(--accent);
+      font: 650 clamp(22px, 4vw, 30px)/1 var(--font-data);
+    }
+    .detail-title { display: block; color: var(--accent); font-size: 15px; }
+    .detail-text { display: block; }
+    .detail[aria-hidden="true"] { visibility: hidden; }
+
+    .workflow[data-instant] :is(.step-number, .rail-progress),
+    .step:focus-visible .step-number { transition: none; }
+    @media (max-width: 519px) {
+      .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .timeline-rail { display: none; }
+    }
+    @media (max-width: 259px) {
+      .steps { grid-template-columns: minmax(0, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .step-number, .rail-progress { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="workflow">
+    <h1>合作流程</h1>
+    <div class="timeline">
+      <svg class="timeline-rail" viewBox="0 0 300 54" preserveAspectRatio="none" aria-hidden="true">
+        <path class="rail-path rail-base" d="M0 27 C34 55 66 55 100 27 S166 -1 200 27 S266 55 300 27"/>
+        <path class="rail-path rail-progress" pathLength="1" d="M0 27 C34 55 66 55 100 27 S166 -1 200 27 S266 55 300 27"/>
+      </svg>
+      <ol class="steps" aria-label="合作步驟">
+        <li><button class="step" type="button" aria-pressed="true" aria-controls="workflow-detail" aria-describedby="need-detail" data-active><span class="step-number" aria-hidden="true">01<span class="step-cue"></span></span><span class="step-title">確認需求</span></button></li>
+        <li><button class="step" type="button" aria-pressed="false" aria-controls="workflow-detail" aria-describedby="draft-detail"><span class="step-number" aria-hidden="true">02<span class="step-cue"></span></span><span class="step-title">提出草案</span></button></li>
+        <li><button class="step" type="button" aria-pressed="false" aria-controls="workflow-detail" aria-describedby="review-detail"><span class="step-number" aria-hidden="true">03<span class="step-cue"></span></span><span class="step-title">討論修正</span></button></li>
+        <li><button class="step" type="button" aria-pressed="false" aria-controls="workflow-detail" aria-describedby="delivery-detail"><span class="step-number" aria-hidden="true">04<span class="step-cue"></span></span><span class="step-title">交付成果</span></button></li>
+      </ol>
+    </div>
+    <div class="details" id="workflow-detail">
+      <p class="detail" id="need-detail" aria-hidden="false">
+        <span class="detail-number" aria-hidden="true">01</span><span><strong class="detail-title">先確認要做什麼</strong><span class="detail-text">我們先確認用途、預算和交件日，開工前寫清楚報價項目、修改輪次和交付格式。</span></span>
+      </p>
+      <p class="detail" id="draft-detail" aria-hidden="true">
+        <span class="detail-number" aria-hidden="true">02</span><span><strong class="detail-title">先看草圖或初步版面</strong><span class="detail-text">我會說明設計方向，你可以確認圖像、文字重點和版面是否符合用途。</span></span>
+      </p>
+      <p class="detail" id="review-detail" aria-hidden="true">
+        <span class="detail-number" aria-hidden="true">03</span><span><strong class="detail-title">整理回饋，確認定稿</strong><span class="detail-text">請由一位窗口彙整回饋。我會依約定範圍修正，再一起確認定稿。</span></span>
+      </p>
+      <p class="detail" id="delivery-detail" aria-hidden="true">
+        <span class="detail-number" aria-hidden="true">04</span><span><strong class="detail-title">交付約定的成果</strong><span class="detail-text">印刷案交付印製用檔案，網站案依約交付頁面或上線成果。</span></span>
+      </p>
+    </div>
+  </main>
+  <script>
+    const workflow = document.querySelector('.workflow');
+    const steps = [...document.querySelectorAll('.step')];
+    const details = [...document.querySelectorAll('.detail')];
+    let selected = 0;
+    let hovered = -1;
+    let focused = -1;
+    let previous = 0;
+    let detailAnimation;
+    let autoplay;
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+    function stopAutoplay() {
+      workflow.dataset.engaged = '';
+      clearInterval(autoplay);
+    }
+
+    function startAutoplay() {
+      if (reducedMotion.matches || 'engaged' in workflow.dataset) return;
+      autoplay = setInterval(() => {
+        if (reducedMotion.matches) {
+          clearInterval(autoplay);
+          return;
+        }
+        selected += 1;
+        render(true);
+        if (selected === steps.length - 1) clearInterval(autoplay);
+      }, 1250);
+    }
+
+    function render(animate = false) {
+      const visible = hovered >= 0 ? hovered : focused >= 0 ? focused : selected;
+      if (animate) delete workflow.dataset.instant;
+      else workflow.dataset.instant = '';
+      workflow.style.setProperty('--rail-position', visible / (steps.length - 1));
+      steps.forEach((step, index) => {
+        step.setAttribute('aria-pressed', index === selected);
+        if (index === visible) step.dataset.active = '';
+        else delete step.dataset.active;
+        details[index].setAttribute('aria-hidden', index !== visible);
+      });
+      if (visible === previous) return;
+      detailAnimation?.cancel();
+      if (animate && !reducedMotion.matches) {
+        const offset = visible > previous ? 12 : -12;
+        detailAnimation = details[visible].animate(
+          [{ opacity: .35, transform: `translateX(${offset}px)` }, { opacity: 1, transform: 'translateX(0)' }],
+          { duration: 220, easing: 'cubic-bezier(.22, 1, .36, 1)' }
+        );
+      }
+      previous = visible;
+    }
+
+    steps.forEach((step, index) => {
+      step.addEventListener('pointerenter', (event) => {
+        if (event.pointerType !== 'mouse') return;
+        stopAutoplay();
+        hovered = index;
+        render(true);
+      });
+      step.addEventListener('focus', () => {
+        if (!step.matches(':focus-visible')) return;
+        stopAutoplay();
+        hovered = -1;
+        focused = index;
+        render();
+      });
+      step.addEventListener('blur', () => {
+        if (focused === index) focused = -1;
+        render();
+      });
+      step.addEventListener('click', (event) => {
+        stopAutoplay();
+        selected = index;
+        render(event.detail > 0);
+      });
+    });
+    workflow.addEventListener('pointerleave', () => {
+      hovered = -1;
+      render(true);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      stopAutoplay();
+      hovered = -1;
+      focused = -1;
+      render();
+    });
+    render();
+    if (typeof IntersectionObserver === 'function') {
+      const visibility = new IntersectionObserver(([entry]) => {
+        if (!entry.isIntersecting) return;
+        visibility.disconnect();
+        startAutoplay();
+      });
+      visibility.observe(workflow);
+    } else {
+      startAutoplay();
+    }
+  </script>
+</body>
+</html>
